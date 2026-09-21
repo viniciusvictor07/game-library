@@ -17,19 +17,20 @@ public class ConsoleUI {
     }
 
     public void addGameFlow() {
-        Game pendingGame = createGame();
-        libraryManager.addGame(pendingGame);
-        System.out.println("Game added successfully!");
+        if (libraryManager.addGame(newGame())) {
+            System.out.println("Game added successfully!");
+        } else {
+            System.out.println("Game already exists!");
+        }
     }
 
     public void removeGameFlow() {
         showGamesFlow();
         System.out.println("Enter the game number to remove:");
-        int selectedGame = readOption() - 1;
+        int selectedGame = readInt() - 1;
         libraryManager.removeGame(selectedGame);
         System.out.println("Game removed successfully!");
     }
-
 
     public void showGamesFlow() {
         ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
@@ -58,7 +59,7 @@ public class ConsoleUI {
     public void process() {
         while (true) {
             showMenu();
-            int selectedOption = readOption();
+            int selectedOption = readInt();
 
             if (selectedOption == 0) {
                 exit();
@@ -86,12 +87,12 @@ public class ConsoleUI {
         }
     }
 
-    public Game createGame() {
+    public Game newGame() {
         System.out.println("Enter game name:");
-        String selectedName = sc.nextLine();
+        String selectedName = readValidString();
 
         System.out.println("Enter game franchise:");
-        String selectedFranchise = sc.nextLine();
+        String selectedFranchise = readValidString();
 
         System.out.println("Enter game ranking:");
         String selectedRanking = chooseRanking();
@@ -103,7 +104,7 @@ public class ConsoleUI {
 
     public String chooseRanking() {
         showRankingOptions();
-        int rankingOption = readOption();
+        int rankingOption = readInt();
         return switch (rankingOption) {
             case 1 -> "S";
             case 2 -> "A";
@@ -129,7 +130,7 @@ public class ConsoleUI {
 
     public String choosePendingStatus() {
         showPendingStatusOptions();
-        int pendingOption = readOption();
+        int pendingOption = readInt();
         return switch (pendingOption) {
             case 1 -> "Playing";
             case 2 -> "Completed";
@@ -148,21 +149,29 @@ public class ConsoleUI {
         System.out.println("Enter your option:");
     }
 
-    public int readOption() {
+    public int readInt() {
         while (true) {
             try {
-                int option = sc.nextInt();
+                int input = sc.nextInt();
                 sc.nextLine();
-                return option;
+                return input;
             } catch (InputMismatchException e) {
                 sc.nextLine();
-                System.out.println("Invalid input. Please enter a number:");
+                showInvalidOption();
             }
         }
     }
 
+    public String readValidString() {
+        String input;
+        while ((input = sc.nextLine().trim()).isEmpty()) {
+            showInvalidOption();
+        }
+        return input;
+    }
+
     public void showInvalidOption() {
-        System.out.println("Invalid option");
+        System.out.println("Invalid input, please try again: ");
     }
 
     public void exit() {
