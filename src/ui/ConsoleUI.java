@@ -25,6 +25,7 @@ public class ConsoleUI {
     }
 
     public void removeGameFlow() {
+
         showGamesFlow();
         System.out.println("Enter the game number to remove:");
         int selectedGame = readInt() - 1;
@@ -33,25 +34,51 @@ public class ConsoleUI {
     }
 
     public void showGamesFlow() {
-        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
-        int index = 0;
-        System.out.println("----- Games List -----");
-        for (Game game : gamesLibrary) {
-            index++;
-            System.out.printf("%d. %s\nFranchise: %s\nRanking: %s\nPending Status: %s\n",
-                    index,
-                    game.getName().toUpperCase(),
-                    game.getFranchise(),
-                    game.getRanking(),
-                    game.getPendingStatus());
+        if (isLibraryEmpty()) {
+            return;
         }
-        System.out.println("-------------------");
+        showGamesList();
+    }
+
+    public void showSelectedGameInfoFlow() {
+        if (isLibraryEmpty()) {
+            return;
+        }
+        showGamesList();
+        System.out.println("Enter the game number to show info:");
+        int selectedOption = readInt() - 1;
+        showGameInfo(selectedOption);
+    }
+
+    public void showGamesList() {
+        System.out.println("----- Games List -----");
+        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
+        for (Game game : gamesLibrary) {
+            System.out.printf("%d. %s\n",
+                    gamesLibrary.indexOf(game) + 1,
+                    game.getName().toUpperCase());
+        }
+    }
+
+    public void showGameInfo(int selectedOption) {
+        ArrayList <Game> gamesLibrary = libraryManager.getGamesLibrary();
+        for (Game game : gamesLibrary) {
+            if (gamesLibrary.indexOf(game) == selectedOption) {
+                System.out.println( "----- Game Info -----\n" + game.getName().toUpperCase());
+                System.out.printf("Franchise: %s\n", game.getFranchise().toUpperCase());
+                System.out.printf("Ranking: %s\n", game.getRanking().toUpperCase());
+                System.out.printf("Pending Status: %s\n", game.getPendingStatus().toUpperCase());
+                System.out.println("-------------------");
+            }
+        }
     }
 
     public void showMenu() {
+        System.out.println("----- Game Library -----");
         System.out.println("1. Add a game");
         System.out.println("2. Remove a game");
         System.out.println("3. Show games");
+        System.out.println("4. Show selected game info");
         System.out.println("0. Exit");
         System.out.println("Enter your option:");
     }
@@ -80,6 +107,9 @@ public class ConsoleUI {
                 break;
             case 3:
                 showGamesFlow();
+                break;
+            case 4:
+                showSelectedGameInfoFlow();
                 break;
             default:
                 showInvalidOption();
@@ -147,6 +177,15 @@ public class ConsoleUI {
         System.out.println("3. Wishlist");
         System.out.println("4. Abandoned");
         System.out.println("Enter your option:");
+    }
+
+    public boolean isLibraryEmpty() {
+        if (libraryManager.getGamesLibrary().isEmpty()) {
+            System.out.println("The library is empty.");
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public int readInt() {
