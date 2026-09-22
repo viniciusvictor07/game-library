@@ -1,20 +1,17 @@
 package entities;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class LibraryManager {
-    @SuppressWarnings("all")
-    private final Scanner sc;
     private final ArrayList<Game> gamesLibrary;
 
-    public LibraryManager(Scanner sc, ArrayList<Game> gamesLibrary) {
-        this.sc = sc;
+    public LibraryManager(ArrayList<Game> gamesLibrary) {
         this.gamesLibrary = gamesLibrary;
     }
 
-    public void addGame(Game pendingGame) {
+    public boolean addGame(Game pendingGame) {
         gamesLibrary.add(pendingGame);
+        return true;
     }
 
     public void removeGame(int selectedOption) {

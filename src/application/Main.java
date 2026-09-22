@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         ArrayList<Game> gamesLibrary = new ArrayList<>();
-        LibraryManager libraryManager = new LibraryManager(sc, gamesLibrary);
+        LibraryManager libraryManager = new LibraryManager(gamesLibrary);
         ConsoleUI consoleUI = new ConsoleUI(sc, libraryManager);
         consoleUI.process();
 
