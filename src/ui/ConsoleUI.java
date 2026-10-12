@@ -16,6 +16,7 @@ public class ConsoleUI {
         this.sc = sc;
     }
 
+    //    input functions
     public void addGameFlow() {
         if (libraryManager.addGame(newGame())) {
             System.out.println("Game added successfully!");
@@ -25,7 +26,9 @@ public class ConsoleUI {
     }
 
     public void removeGameFlow() {
-
+        if (isLibraryEmpty()) {
+            return;
+        }
         showGamesFlow();
         System.out.println("Enter the game number to remove:");
         int selectedGame = readInt() - 1;
@@ -50,21 +53,32 @@ public class ConsoleUI {
         showGameInfo(selectedOption);
     }
 
+    public void updateGameInfoFlow() {
+        if (isLibraryEmpty()) {
+            return;
+        }
+        showGamesList();
+        System.out.println("Enter the game number to update:");
+        int selectedGame = readInt() - 1;
+
+        updateGameStats(selectedGame);
+        System.out.println("Game updated successfully!");
+    }
+
+    //    exibition functions
     public void showGamesList() {
         System.out.println("----- Games List -----");
         ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
         for (Game game : gamesLibrary) {
-            System.out.printf("%d. %s\n",
-                    gamesLibrary.indexOf(game) + 1,
-                    game.getName().toUpperCase());
+            System.out.printf("%d. %s\n", gamesLibrary.indexOf(game) + 1, game.getName().toUpperCase());
         }
     }
 
     public void showGameInfo(int selectedOption) {
-        ArrayList <Game> gamesLibrary = libraryManager.getGamesLibrary();
+        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
         for (Game game : gamesLibrary) {
             if (gamesLibrary.indexOf(game) == selectedOption) {
-                System.out.println( "----- Game Info -----\n" + game.getName().toUpperCase());
+                System.out.println("----- Game Info -----\n" + game.getName().toUpperCase());
                 System.out.printf("Franchise: %s\n", game.getFranchise().toUpperCase());
                 System.out.printf("Ranking: %s\n", game.getRanking().toUpperCase());
                 System.out.printf("Pending Status: %s\n", game.getPendingStatus().toUpperCase());
@@ -73,16 +87,43 @@ public class ConsoleUI {
         }
     }
 
-    public void showMenu() {
-        System.out.println("----- Game Library -----");
-        System.out.println("1. Add a game");
-        System.out.println("2. Remove a game");
-        System.out.println("3. Show games");
-        System.out.println("4. Show selected game info");
-        System.out.println("0. Exit");
+    public void showGameStats(Game game) {
+        System.out.printf("1. Name: %s\n", game.getName());
+        System.out.printf("2. Franchise: %s\n", game.getFranchise());
+        System.out.printf("3. Ranking: %s\n", game.getRanking());
+        System.out.printf("4. Pending Status: %s\n", game.getPendingStatus());
+    }
+
+    public void showRankingOptions() {
+        System.out.println("Enter game ranking:");
+        System.out.println("1. S");
+        System.out.println("2. A");
+        System.out.println("3. B");
+        System.out.println("4. C");
+        System.out.println("5. D");
+        System.out.println("6. E");
+        System.out.println("7. NA");
         System.out.println("Enter your option:");
     }
 
+    public void showPendingStatusOptions() {
+        System.out.println("Enter game pending status:");
+        System.out.println("1. Playing");
+        System.out.println("2. Completed");
+        System.out.println("3. Wishlist");
+        System.out.println("4. Abandoned");
+        System.out.println("Enter your option:");
+    }
+
+    public void showInvalidOption() {
+        System.out.println("Invalid input, please try again: ");
+    }
+
+    public void exit() {
+        System.out.println("Exiting... Goodbye!");
+    }
+
+    //    process functions
     public void process() {
         while (true) {
             showMenu();
@@ -111,12 +152,27 @@ public class ConsoleUI {
             case 4:
                 showSelectedGameInfoFlow();
                 break;
+            case 5:
+                updateGameInfoFlow();
+                break;
             default:
                 showInvalidOption();
                 break;
         }
     }
 
+    public void showMenu() {
+        System.out.println("----- Game Library -----");
+        System.out.println("1. Add a game");
+        System.out.println("2. Remove a game");
+        System.out.println("3. Show games");
+        System.out.println("4. Show selected game info");
+        System.out.println("5. Update game info");
+        System.out.println("0. Exit");
+        System.out.println("Enter your option:");
+    }
+
+    //    utility functions
     public Game newGame() {
         System.out.println("Enter game name:");
         String selectedName = readValidString();
@@ -127,6 +183,7 @@ public class ConsoleUI {
         System.out.println("Enter game ranking:");
         String selectedRanking = chooseRanking();
 
+        System.out.println("Enter game pending status:");
         String selectedPendingStatus = choosePendingStatus();
 
         return new Game(selectedName, selectedFranchise, selectedRanking, selectedPendingStatus);
@@ -142,20 +199,9 @@ public class ConsoleUI {
             case 4 -> "C";
             case 5 -> "D";
             case 6 -> "E";
-            default -> "NA";
+            case 7 -> "NA";
+            default -> "Unknown";
         };
-    }
-
-    public void showRankingOptions() {
-        System.out.println("Enter game ranking:");
-        System.out.println("1. S");
-        System.out.println("2. A");
-        System.out.println("3. B");
-        System.out.println("4. C");
-        System.out.println("5. D");
-        System.out.println("6. E");
-        System.out.println("7. NA");
-        System.out.println("Enter your option:");
     }
 
     public String choosePendingStatus() {
@@ -170,13 +216,66 @@ public class ConsoleUI {
         };
     }
 
-    public void showPendingStatusOptions() {
-        System.out.println("Enter game pending status:");
-        System.out.println("1. Playing");
-        System.out.println("2. Completed");
-        System.out.println("3. Wishlist");
-        System.out.println("4. Abandoned");
-        System.out.println("Enter your option:");
+    public void updateGameStats(int gameIndex) {
+        if (isLibraryEmpty()) {
+            return;
+        }
+        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
+        Game game = gamesLibrary.get(gameIndex);
+        showGameStats(game);
+
+        System.out.println("Enter the stat to update: ");
+        int selectedOption = readInt();
+
+        switch (selectedOption) {
+            case 1:
+                updateGameName(gameIndex);
+                break;
+            case 2:
+                updateGameFranchise(gameIndex);
+                break;
+            case 3:
+                updateGameRanking(gameIndex);
+                break;
+            case 4:
+                updateGamePendingStatus(gameIndex);
+                break;
+            default:
+                System.out.println("Invalid selection");
+                break;
+        }
+    }
+
+    public void updateGameFranchise(int gameIndex) {
+        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
+        Game game = gamesLibrary.get(gameIndex);
+        System.out.println("Enter the new franchise: ");
+        String newFranchise = sc.nextLine();
+        game.setFranchise(newFranchise);
+    }
+
+    public void updateGameRanking(int gameIndex) {
+        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
+        Game game = gamesLibrary.get(gameIndex);
+        System.out.println("Enter the new ranking: ");
+        String newRanking = chooseRanking();
+        game.setRanking(newRanking);
+    }
+
+    public void updateGamePendingStatus(int gameIndex) {
+        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
+        Game game = gamesLibrary.get(gameIndex);
+        System.out.println("Enter the new pending status: ");
+        String newPendingStatus = choosePendingStatus();
+        game.setPendingStatus(newPendingStatus);
+    }
+
+    public void updateGameName(int gameIndex) {
+        ArrayList<Game> gamesLibrary = libraryManager.getGamesLibrary();
+        Game game = gamesLibrary.get(gameIndex);
+        System.out.println("Enter the new name: ");
+        String newName = sc.nextLine();
+        game.setName(newName);
     }
 
     public boolean isLibraryEmpty() {
@@ -207,13 +306,5 @@ public class ConsoleUI {
             showInvalidOption();
         }
         return input;
-    }
-
-    public void showInvalidOption() {
-        System.out.println("Invalid input, please try again: ");
-    }
-
-    public void exit() {
-        System.out.println("Exiting... Goodbye!");
     }
 }
